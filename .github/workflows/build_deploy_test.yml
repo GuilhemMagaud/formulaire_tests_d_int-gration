@@ -28,6 +28,15 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Set build version
+        id: set_build_version
+        run: echo "BUILD_VERSION=$(date '+%Y%m%d')-$(echo $GITHUB_RUN_ID | cut -c1-7)-${{ github.run_number }}" >> $GITHUB_ENV
+      - name: Update README
+          run: |
+            echo "Build Version: $BUILD_VERSION" >> README.md
+            git add README.md
+            git commit -m "Update README with build version"
+            git push
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
