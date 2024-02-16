@@ -28,9 +28,14 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Set build version
-        id: set_build_version
-        run: echo "BUILD_VERSION=$(date '+%Y%m%d')-$(echo $GITHUB_RUN_ID | cut -c1-7)-${{ github.run_number }}" >> $GITHUB_ENV
+      - name: Versioning
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          # Combine workflow ID, execution number, and attempt number to create a unique version
+          VERSION="v${{ github.run_number }}-${{ github.run_id }}-${{ github.run_attempt }}"
+          git tag -a $VERSION -m "Version $VERSION"
+          git push origin --tags
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
