@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import InputFormComponent from './component/inputFormComponent';
 
@@ -33,7 +33,7 @@ function App() {
   const [zipCodeError, setZipCodeError] = useState("")
   const [isValidForm, setIsValidForm] = useState(false)
 
-  let regexForName = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+$/;
+  let regexForName = /^[a-zA-ZÀ-ÖØ-öø-ÿ-]+$/;
   let isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   /**
@@ -127,18 +127,18 @@ function App() {
   }
 
   /**
+   * checks whether the form is valid
+   */
+  const checkValidForm = useCallback(() => {
+    setIsValidForm(isValidFirstname && isValidLastname && isValidMail && isValidBirthDate && isValidCity && isValidZipCode);
+}, [isValidFirstname, isValidLastname, isValidMail, isValidBirthDate, isValidCity, isValidZipCode]);
+
+  /**
    * useEffect calling the method for checking whether the form is valid
    */
   useEffect(() => {
     checkValidForm();
-  }, [isValidFirstname, isValidLastname, isValidMail, isValidBirthDate, isValidCity, isValidZipCode]);
-
-  /**
-   * checks whether the form is valid
-   */
-  const checkValidForm = function() {
-    setIsValidForm(isValidFirstname && isValidLastname && isValidMail && isValidBirthDate && isValidCity && isValidZipCode);
-  }
+  }, [checkValidForm]);
 
   /**
    * submit data in local storage
