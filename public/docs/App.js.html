@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: App.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: App.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import InputFormComponent from './component/inputFormComponent';
+
+/**
+ * calculating age according to year of birth
+ * @param {Date} birth date of birth set as parameter
+ * @returns {number} age of date of birth
+ */
+export const calculatingAge = function (birth) {
+  let dateDiff = new Date(Date.now() - new Date(birth).getTime())
+  return Math.abs(dateDiff.getUTCFullYear() - 1970);
+}
+
+function App() {
+  const [firstname, setfirstname] = useState("")
+  const [lastname, setlastname] = useState("")
+  const [mail, setmail] = useState("")
+  const [birthDate, setbirthDate] = useState(new Date())
+  const [city, setcity] = useState("")
+  const [zipCode, setzipCode] = useState(0)
+  const [isValidFirstname, setIsValidFirstname] = useState(false)
+  const [isValidLastname, setIsValidLastname] = useState(false)
+  const [isValidMail, setIsValidMail] = useState(false)
+  const [isValidBirthDate, setIsValidBirthDate] = useState(false)
+  const [isValidCity, setIsValidCity] = useState(false)
+  const [isValidZipCode, setIsValidZipCode] = useState(false)
+  const [firstnameError, setFirstnameError] = useState("")
+  const [lastnameError, setLastnameError] = useState("")
+  const [mailError, setMailError] = useState("")
+  const [birthDateError, setBirthDateError] = useState("")
+  const [cityError, setCityError] = useState("")
+  const [zipCodeError, setZipCodeError] = useState("")
+  const [isValidForm, setIsValidForm] = useState(false)
+
+  let regexForName = /^[a-zA-ZÀ-ÖØ-öø-ÿ-]+$/;
+  let isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /**
+   * change firstname
+   * @param {*} event current event
+   */
+  const handleChangeFirstname = function (event){
+    if(regexForName.test(event.target.value)){
+      setfirstname(event.target.value);
+      setIsValidFirstname(true);
+      setFirstnameError("");
+    }
+    else {
+      setIsValidFirstname(false);
+      setFirstnameError("nom invalide");
+    }
+  }
+
+  /**
+   * change lastname
+   * @param {*} event current event
+   */
+  const handleChangeLastname = function (event){
+    if(regexForName.test(event.target.value)){
+      setlastname(event.target.value);
+      setIsValidLastname(true);
+      setLastnameError("");
+    }
+    else {
+      setIsValidLastname(false);
+      setLastnameError("prénom invalide");
+    }
+  }
+
+  /**
+   * change mail
+   * @param {*} event current event
+   */
+  const handleChangeMail = function (event){
+    if(isEmailValid.test(event.target.value)){
+      setmail(event.target.value);
+      setIsValidMail(true);
+      setMailError("");
+    }
+    else {
+      setIsValidMail(false);
+      setMailError("mail invalide");
+    }
+  }
+
+  /**
+   * change birthdate
+   * @param {*} event current event
+   */
+  const handleChangeBirthDate = function (event){
+    if (calculatingAge(event.target.value) >=  18) {
+      setbirthDate(event.target.value);
+      setIsValidBirthDate(true);
+      setBirthDateError("");
+    }
+    else {
+      setIsValidBirthDate(false);
+      setBirthDateError("age inférieur à 18 ans");
+    }
+  }
+
+  /**
+   * change city
+   * @param {*} event current event
+   */
+  const handleChangeCity = function (event){
+    setcity(event.target.value);
+    setIsValidCity(true);
+    setCityError("");
+  }
+
+  /**
+   * change zipcode
+   * @param {*} event current event
+   */
+  const handleChangeZipCode = function (event){
+    if(event.target.value.toString().length === 5){
+      setzipCode(event.target.value);
+      setIsValidZipCode(true);
+      setZipCodeError("");
+    }
+    else {
+      setIsValidZipCode(false);
+      setZipCodeError("zipcode non formalisé");
+    }
+  }
+
+  /**
+   * checks whether the form is valid
+   */
+  const checkValidForm = useCallback(() => {
+    setIsValidForm(isValidFirstname &amp;&amp; isValidLastname &amp;&amp; isValidMail &amp;&amp; isValidBirthDate &amp;&amp; isValidCity &amp;&amp; isValidZipCode);
+}, [isValidFirstname, isValidLastname, isValidMail, isValidBirthDate, isValidCity, isValidZipCode]);
+
+  /**
+   * useEffect calling the method for checking whether the form is valid
+   */
+  useEffect(() => {
+    checkValidForm();
+  }, [checkValidForm]);
+
+  /**
+   * submit data in local storage
+   */
+  const handleSubmit = function() {
+    window.localStorage.setItem("firstname", firstname);
+    window.localStorage.setItem("lastname", lastname);
+    window.localStorage.setItem("mail", mail);
+    window.localStorage.setItem("birthDate", birthDate);
+    window.localStorage.setItem("city", city);
+    window.localStorage.setItem("zipCode", zipCode);
+
+    const input1 = document.getElementById('firstnameInput');
+    const input2 = document.getElementById('lastnameInput');
+    const input3 = document.getElementById('mailInput');
+    const input4 = document.getElementById('dateInput');
+    const input5 = document.getElementById('cityInput');
+    const input6 = document.getElementById('zipcodeInput');
+    
+    input1.value = '';
+    input2.value = '';
+    input3.value = '';
+    input4.value = '';
+    input5.value = '';
+    input6.value = '';
+    window.alert("les données ont bien été sauvegardées");
+  }
+
+  return (
+    &lt;div className="App">
+      &lt;form style={formStyle} onSubmit={handleSubmit}>
+        &lt;InputFormComponent
+          labelName="Nom"
+          inputTestId="firstnameInput"
+          inputType="text"
+          inputName="firstname"
+          errorTestId="firstnameErrorMessage"
+          errorMessage={firstnameError}
+          handleChange={handleChangeFirstname}
+        />
+        &lt;InputFormComponent
+          labelName="Prénom"
+          inputTestId="lastnameInput"
+          inputType="text"
+          inputName="lastname"
+          errorTestId="lastnameErrorMessage"
+          errorMessage={lastnameError}
+          handleChange={handleChangeLastname}
+        />
+        &lt;InputFormComponent
+          labelName="Mail"
+          inputTestId="mailInput"
+          inputType="text"
+          inputName="mail"
+          errorTestId="mailErrorMessage"
+          errorMessage={mailError}
+          handleChange={handleChangeMail}
+        />
+        &lt;InputFormComponent
+          labelName="Date de naissance"
+          inputTestId="dateInput"
+          inputType="date"
+          inputName="birthDate"
+          errorTestId="dateErrorMessage"
+          errorMessage={birthDateError}
+          handleChange={handleChangeBirthDate}
+        />
+        &lt;InputFormComponent
+          labelName="Ville"
+          inputTestId="cityInput"
+          inputType="text"
+          inputName="city"
+          errorTestId="cityErrorMessage"
+          errorMessage={cityError}
+          handleChange={handleChangeCity}
+        />
+        &lt;InputFormComponent
+          labelName="Code postal"
+          inputTestId="zipcodeInput"
+          inputType="number"
+          inputName="zipcode"
+          errorTestId="zipcodeErrorMessage"
+          errorMessage={zipCodeError}
+          handleChange={handleChangeZipCode}
+        />
+        &lt;input data-testid="submitButton" type="submit" value="Envoyer" disabled={!isValidForm} />
+      &lt;/form>
+    &lt;/div>
+  );
+}
+
+const formStyle = {
+  display: 'grid',
+  justifyContent: 'center',
+};
+
+export default App;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#calculatingAge">calculatingAge</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Feb 16 2024 16:36:44 GMT+0100 (heure normale d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
