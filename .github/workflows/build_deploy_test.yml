@@ -40,9 +40,9 @@ jobs:
       - name: Set build version
         id: set_build_version
         run: |
-          VERSION=`$${github.run_id}{github.run_number}{github.run_attempt}`
+          VERSION=`$${{github.run_id}}{{github.run_number}}{{github.run_attempt}}`
           
-          git tag v0.1.0-$VERSION -a -m "build number $VERSION"
+          git tag v$VERSION -a -m "build number $VERSION"
 
           npm version from-git
           
