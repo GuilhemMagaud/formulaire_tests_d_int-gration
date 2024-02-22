@@ -40,7 +40,7 @@ jobs:
       - name: Set build version
         id: set_build_version
         run: |          
-          git tag v0.1.0- ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }} -a -m "Build ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+          git tag v0.1.0-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }} -a -m "Build ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
           git tag
           npm version from-git --allow-same-version
           
