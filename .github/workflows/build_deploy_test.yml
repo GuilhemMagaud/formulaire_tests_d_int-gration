@@ -39,10 +39,8 @@ jobs:
           if-no-files-found: error
       - name: Set build version
         id: set_build_version
-        run: |
-          VERSION=`${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}`
-          
-          git tag v$VERSION -a -m "build number $VERSION"
+        run: |          
+          git tag v{{github.run_id}}.${{github.run_number}}.${{github.run_attempt}} -a -m "build number ${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}"
 
           npm version from-git
           
