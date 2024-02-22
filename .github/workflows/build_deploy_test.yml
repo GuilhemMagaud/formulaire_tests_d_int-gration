@@ -28,15 +28,6 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Set build version
-        id: set_build_version
-        run: |
-          BUILD_NUMBER=$(echo $GITHUB_RUN_NUMBER | cut -c1-7)-$(echo $GITHUB_RUN_ID | cut -c1-7)-$(echo $GITHUB_RUN_ATTEMPT)
-
-          npm version patch
-          echo "::set-output name=NEW_VERSION::$(node -e 'console.log(require("./package.json").version)')"
-
-          echo "Version: ${{ steps.get_new_version.outputs.NEW_VERSION }}" > README.md
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
@@ -46,7 +37,41 @@ jobs:
           # Upload entire repository
           path: build
           if-no-files-found: error
+ 
+  update_version_and_readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set build number
+        id: set_build_number
+        run: echo "BUILD_NUMBER=$(echo $GITHUB_RUN_NUMBER | cut -c1-7)-$(echo $GITHUB_RUN_ID | cut -c1-7)-$(echo $GITHUB_RUN_ATTEMPT)" >> $GITHUB_ENV
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Update version with npm
+        run: |
+          BUILD_NUMBER=$(echo $GITHUB_RUN_NUMBER | cut -c1-7)-$(echo $GITHUB_RUN_ID | cut -c1-7)-$(echo $GITHUB_RUN_ATTEMPT)
           
+          npm version patch
+
+      - name: Get new version
+        id: get_new_version
+        run: echo "::set-output name=NEW_VERSION::$(node -e 'console.log(require("./package.json").version)')"
+
+      - name: Update README with version
+        run: echo "Version: ${{ steps.get_new_version.outputs.NEW_VERSION }}" > README.md
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md package.json
+          git commit -m "Update version in README and package.json [skip ci]"
+          git push
+
   # Deploy job
   deploy:
     # Deploy to the github-pages environment
