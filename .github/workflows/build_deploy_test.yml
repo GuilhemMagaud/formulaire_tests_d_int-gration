@@ -8,6 +8,10 @@ on:
 
 jobs: 
   build_test:
+    permissions:
+      contents: write
+      pull-requests: write
+      
     runs-on: ubuntu-latest
 
     strategy:
@@ -45,9 +49,11 @@ jobs:
           git tag v0.1.0-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }} -a -m "Build: ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
           git tag
           git add .
-          git commit -m "clean"
+          git commit -a -m "clean"
           git push
           npm version from-git --allow-same-version
+          echo "v0.1.0-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}" >> README.md
+          git commit -a -m "new version v0.1.0-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
           
   # Deploy job
   deploy:
